@@ -112,6 +112,7 @@ inline static NSString* keyForURL(NSURL* url) {
 	[connection release];
 }
 
+#if TARGET_OS_IPHONE
 - (UIImage*)imageForURL:(NSURL*)aURL shouldLoadWithObserver:(id<EGOImageLoaderObserver>)observer {
 	if(!aURL) return nil;
 	
@@ -124,6 +125,21 @@ inline static NSString* keyForURL(NSURL* url) {
 		return nil;
 	}
 }
+#else
+- (NSImage*)imageForURL:(NSURL*)aURL shouldLoadWithObserver:(id<EGOImageLoaderObserver>)observer {
+	if(!aURL) return nil;
+	
+	NSImage* anImage = [[EGOCache currentCache] imageForKey:keyForURL(aURL)];
+	
+	if(anImage) {
+		return anImage;
+	} else {
+		[self loadImageForURL:(NSURL*)aURL observer:observer];
+		return nil;
+	}
+}
+
+#endif
 
 - (BOOL)hasLoadedImageURL:(NSURL*)aURL {
 	return [[EGOCache currentCache] hasCacheForKey:keyForURL(aURL)];
@@ -142,7 +158,11 @@ inline static NSString* keyForURL(NSURL* url) {
 #pragma mark URL Connection delegate methods
 
 - (void)imageLoadConnectionDidFinishLoading:(EGOImageLoadConnection *)connection {
+#if TARGET_OS_IPHONE
 	UIImage* anImage = [UIImage imageWithData:connection.responseData];
+#else if TARGET_OS_MAC
+	NSImage* anImage = [[[NSImage alloc] initWithData:connection.responseData] autorelease];
+#endif
 	
 	if(!anImage) {
 		NSError* error = [NSError errorWithDomain:[connection.imageURL host] code:406 userInfo:nil];

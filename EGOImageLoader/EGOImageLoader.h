@@ -39,7 +39,12 @@
 
 - (BOOL)isLoadingImageURL:(NSURL*)aURL;
 - (void)loadImageForURL:(NSURL*)aURL observer:(id<EGOImageLoaderObserver>)observer;
+
+#if TARGET_OS_IPHONE
 - (UIImage*)imageForURL:(NSURL*)aURL shouldLoadWithObserver:(id<EGOImageLoaderObserver>)observer;
+#else
+- (NSImage*)imageForURL:(NSURL*)aURL shouldLoadWithObserver:(id<EGOImageLoaderObserver>)observer;
+#endif
 - (BOOL)hasLoadedImageURL:(NSURL*)aURL;
 
 - (void)cancelLoadForURL:(NSURL*)aURL;
