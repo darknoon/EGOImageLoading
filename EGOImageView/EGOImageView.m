@@ -81,7 +81,6 @@
 
 	UIImage* anImage = [[notification userInfo] objectForKey:@"image"];
 	self.image = anImage;
-	[self setNeedsDisplay];
 	
 	if([self.delegate respondsToSelector:@selector(imageViewLoadedImage:)]) {
 		[self.delegate imageViewLoadedImage:self];
